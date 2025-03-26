@@ -19,12 +19,21 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
+COPY package*.json ./
+RUN npm ci --omit=dev
+
 # TODO: Copy built assets and necessary files
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
+#COPY --from=builder /app/dist ./dist
+#COPY --from=builder /app/package*.json ./
+#COPY --from=builder /app/prisma ./prisma
+#COPY --from=builder /app/prisma ./prisma
+#COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 # TODO: SET ENV variables
 ENV NODE_ENV=production
